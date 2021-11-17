@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
+# version 1.0 completed program
+# V1.01 - minor change to save amounts as ABS()
 
+import json
 import pandas as pd
 import os
 import sys, getopt
@@ -109,7 +111,7 @@ jMapper = '{\"Expense\":EXP,\"Amount\":AMT}'
 
 for x in thisDict:
     expType ="[["+ thisDict[x].Exp+"]]"
-    expAmt = thisDict[x].Amt
+    expAmt = abs(thisDict[x].Amt)
     expType = expType.replace("[[","\"").replace("]]","\"")
     jsonString = jsonString+jMapper.replace("EXP",expType).replace("AMT", str(int(expAmt/6.0)))+","
 # at very end tack on []
