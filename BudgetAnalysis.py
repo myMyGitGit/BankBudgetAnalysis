@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version 1.0 completed program
 # V1.01 - minor change to save amounts as ABS()
+# V1.02 - fixed month divisor error
 
 import json
 import pandas as pd
@@ -113,7 +114,7 @@ for x in thisDict:
     expType ="[["+ thisDict[x].Exp+"]]"
     expAmt = abs(thisDict[x].Amt)
     expType = expType.replace("[[","\"").replace("]]","\"")
-    jsonString = jsonString+jMapper.replace("EXP",expType).replace("AMT", str(int(expAmt/6.0)))+","
+    jsonString = jsonString+jMapper.replace("EXP",expType).replace("AMT", str(int(expAmt/numMonths)))+","
 # at very end tack on []
 jsonString = "[" + jsonString + "]"
 jsonString = jsonString.replace(",]", "]")
