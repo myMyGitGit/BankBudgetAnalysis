@@ -2,6 +2,8 @@
 # version 1.0 completed program
 # V1.01 - minor change to save amounts as ABS()
 # V1.02 - fixed month divisor error
+# V1.2 - major change: remove class structure from dictionary, implement Dictionary methods for json and pandas methods to convert json to dataframe
+
 
 import json
 import pandas as pd
@@ -9,26 +11,15 @@ import os
 import sys, getopt
 
 
-class BankLine:
-    def __init__(self, Amt, exp):
-        self.Amt = Amt
-        self.Count = 1
-        self.Exp = exp
-
-
-def GenerateDictionary(Descriptn, Amount, Sign):
-    # print(Descriptn)
-    # print(Amount)
-    # print(Sign)nwdf
+def GenerateDictionary(Descriptn, Amount):
 
     etype = Descriptn[:9]
     expenseType = ExpenseDict.get(etype, Descriptn[:20])
     x = thisDict.get(expenseType, 'None')
     if (x == 'None'):
-        thisDict.update({expenseType: BankLine(Amount, expenseType)})
+        thisDict.update({expenseType: Amount})
     else:
-        x.Amt += Amount
-        x.Count += 1
+        x += Amount
         thisDict.setdefault(expenseType, x)
 
 
@@ -97,30 +88,29 @@ MonthlyQtr = filename + '_' + str(numMonths) + '_Months'    # this is the sheet 
 df = pd.read_csv(filename + '.csv')
 for index in df.index:
     if (df.loc[index, 'Sign'] == 'Debit'):
-        GenerateDictionary(df.loc[index, 'Description'], df.loc[index, 'Amount'], df.loc[index, 'Sign'])
+        GenerateDictionary(df.loc[index, 'Description'], df.loc[index, 'Amount'])
 # =============================================================================
 #         print(df.loc[index,'Description'])
 #         print(df.loc[index,'Amt'])
-#         print(df.loc[index,'Sign'])
 # =============================================================================
 
 # nwdf = pd.DataFrame.from_dict(thisDict, orient='index', dtype=object)
 
 #
-jsonString =""
-jMapper = '{\"Expense\":EXP,\"Amount\":AMT}'
+jsonString = json.dumps(thisDict)
+# jMapper = '{\"Expense\":EXP,\"Amount\":AMT}'
+#
+# for x in thisDict:
+#     expType ="[["+ thisDict[x].Exp+"]]"
+#     expAmt = abs(thisDict[x].Amt)
+#     expType = expType.replace("[[","\"").replace("]]","\"")
+#     jsonString = jsonString+jMapper.replace("EXP",expType).replace("AMT", str(int(expAmt/numMonths)))+","
+# # at very end tack on []
+# jsonString = "[" + jsonString + "]"
+# jsonString = jsonString.replace(",]", "]")
 
-for x in thisDict:
-    expType ="[["+ thisDict[x].Exp+"]]"
-    expAmt = abs(thisDict[x].Amt)
-    expType = expType.replace("[[","\"").replace("]]","\"")
-    jsonString = jsonString+jMapper.replace("EXP",expType).replace("AMT", str(int(expAmt/numMonths)))+","
-# at very end tack on []
-jsonString = "[" + jsonString + "]"
-jsonString = jsonString.replace(",]", "]")
-
- # print (jsonString)
-nwdf = pd.read_json(jsonString)
+print (jsonString)
+nwdf = pd.read_json(jsonString, orient='index')
 writer = pd.ExcelWriter(ExcelOutput)
 
 nwdf.to_excel(writer, MonthlyQtr)
