@@ -3,6 +3,8 @@
 # V1.01 - minor change to save amounts as ABS()
 # V1.02 - fixed month divisor error
 # V1.2 - major change: remove class structure from dictionary, implement Dictionary methods for json and pandas methods to convert json to dataframe
+# V1.3 - fix error caused by using 'sign' as a col name. Look for DEBIT/CREDIT col heading
+# V.1.31 - use all caps when accessing columns by name
 
 
 import json
@@ -87,8 +89,8 @@ MonthlyQtr = filename + '_' + str(numMonths) + '_Months'    # this is the sheet 
 # "Bank_3qtrs.csv"
 df = pd.read_csv(filename + '.csv')
 for index in df.index:
-    if (df.loc[index, 'Sign'] == 'Debit'):
-        GenerateDictionary(df.loc[index, 'Description'], df.loc[index, 'Amount'])
+    if df.loc[index, 'CREDIT/DEBIT'] == 'Debit':
+        GenerateDictionary(df.loc[index, 'DESCRIPTION'], df.loc[index, 'AMOUNT'])
 # =============================================================================
 #         print(df.loc[index,'Description'])
 #         print(df.loc[index,'Amt'])
